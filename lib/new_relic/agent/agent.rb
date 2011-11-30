@@ -1176,10 +1176,20 @@ module NewRelic
         #                    contact
         #  - :data => the data to send as the body of the request
         def send_request(opts)
-          request = Net::HTTP::Post.new(opts[:uri], 'CONTENT-ENCODING' => opts[:encoding], 'HOST' => opts[:collector].name)
-          request['user-agent'] = user_agent
-          request.content_type = "application/octet-stream"
-          request.body = opts[:data]
+          request = EM::HttpRequest.new(opts[:uri])
+          
+          post_data =  {
+            :host => opts[:collector].name,
+            :"CONTENT-ENCODING" => opts[:encoding],
+            :"user-agent" => user_agent,
+            :content_type => "application/octet-stream",
+            :body => opts[:data]
+          }
+          
+          # request = Net::HTTP::Post.new(opts[:uri], 'CONTENT-ENCODING' => opts[:encoding], 'HOST' => opts[:collector].name)
+          # request['user-agent'] = user_agent
+          # request.content_type = "application/octet-stream"
+          # request.body = opts[:data]
 
           log.debug "Connect to #{opts[:collector]}#{opts[:uri]}"
 
@@ -1188,7 +1198,7 @@ module NewRelic
           http.read_timeout = nil
           begin
             NewRelic::TimerLib.timeout(@request_timeout) do
-              response = http.request(request)
+              response = http.post(post_data).response
             end
           rescue Timeout::Error
             log.warn "Timed out trying to post data to New Relic (timeout = #{@request_timeout} seconds)" unless @request_timeout < 30
