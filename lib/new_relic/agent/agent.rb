@@ -1202,7 +1202,9 @@ module NewRelic
           http.read_timeout = nil
           begin
             NewRelic::TimerLib.timeout(@request_timeout) do
+              puts " --[NR]-- Sending newrelic data..."
               response = http.post(post_data).response
+              puts " --[NR]-- I got #{response.response_header}"
             end
           rescue Timeout::Error
             log.warn "Timed out trying to post data to New Relic (timeout = #{@request_timeout} seconds)" unless @request_timeout < 30
