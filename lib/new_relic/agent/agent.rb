@@ -6,6 +6,10 @@ require 'zlib'
 require 'stringio'
 require 'new_relic/data_serialization'
 
+require 'eventmachine'
+require 'em-synchrony'
+require 'em-synchrony/em-http'
+
 module NewRelic
   module Agent
 
