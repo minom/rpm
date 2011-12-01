@@ -1180,6 +1180,8 @@ module NewRelic
         #                    contact
         #  - :data => the data to send as the body of the request
         def send_request(opts)
+          
+          log.debug "Connect to #{opts.inspect}"
           request = EM::HttpRequest.new(opts[:uri])
           
           post_data =  {
@@ -1195,7 +1197,7 @@ module NewRelic
           # request.content_type = "application/octet-stream"
           # request.body = opts[:data]
 
-          log.debug "Connect to #{opts[:collector]}#{opts[:uri]}"
+          
 
           response = nil
           http = control.http_connection(collector)
