@@ -1189,13 +1189,13 @@ module NewRelic
           url = "http://" + opts[:collector].name + opts[:uri]
           log.debug "URL: #{url}"
           request = EM::HttpRequest.new(url)
-          
+          response = send_request({:uri => remote_method_uri(method), :encoding => encoding, :collector => collector, :data => post_data})
           post_data =  {
-            :host => opts[:collector].name,
-            :"CONTENT-ENCODING" => opts[:encoding],
-            :"user-agent" => user_agent,
-            :content_type => "application/octet-stream",
-            :body => opts[:data]
+            'HOST' => opts[:collector].name,
+            'CONTENT-ENCODING' => opts[:encoding],
+            'user-agent' => user_agent,
+            'content_type' => "application/octet-stream",
+            'body' => opts[:data]
           }
           
           # request = Net::HTTP::Post.new(opts[:uri], 'CONTENT-ENCODING' => opts[:encoding], 'HOST' => opts[:collector].name)
