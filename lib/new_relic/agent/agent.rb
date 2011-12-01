@@ -1182,7 +1182,7 @@ module NewRelic
         def send_request(opts)
           
           log.debug "Connect to #{opts.inspect}"
-          request = EM::HttpRequest.new(opts[:uri])
+          request = EM::HttpRequest.new(opts[:collector].name + opts[:uri])
           
           post_data =  {
             :host => opts[:collector].name,
