@@ -1287,9 +1287,10 @@ module NewRelic
           post_data, encoding = compress_data(args)
 
           response = send_request({:uri => remote_method_uri(method), :encoding => encoding, :collector => collector, :data => post_data})
-
+          log.debug "Response came back: #{response.inspect}"
           # raises the right exception if the remote server tells it to die
-          return check_for_exception(response)
+          # Just killing this feature for now
+          # return check_for_exception(response)
         rescue NewRelic::Agent::ForceRestartException => e
           log.info e.message
           raise
