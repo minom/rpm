@@ -1214,8 +1214,8 @@ module NewRelic
               
               f = Fiber.current
               response = request.apost(post_data)
-              response.callback { log.debug "callback[#{response}]"; f.resume(response) }
-              response.errback  { log.debug " errback[#{response}]"; f.resume(response) }
+              response.callback { log.debug "callback[#{response}]"; f.resume(response.response) }
+              response.errback  { log.debug " errback[#{response}]"; f.resume(response.response) }
               
               return Fiber.yield
             end
