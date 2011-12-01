@@ -1207,14 +1207,12 @@ module NewRelic
           begin
             NewRelic::TimerLib.timeout(@request_timeout) do
               log.debug " --[NR]-- Sending newrelic data..."
-              response = http.post(post_data).response
-              log.debug " --[NR]-- I got #{response.response_header}"
-              
               
               f = Fiber.current
               response = request.apost(post_data)
               response.callback { log.debug "callback[#{response}]"; f.resume(response) }
               response.errback  { log.debug " errback[#{response}]"; f.resume(response) }
+              
               return Fiber.yield
             end
           rescue Timeout::Error
