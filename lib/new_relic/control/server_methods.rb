@@ -111,8 +111,8 @@ module NewRelic
       
       def http_connection(host = nil)
         host ||= server
-        http = EM::HttpRequest.new(host.ip || "http://#{host.name}")
-        log.debug("Http Connection opened to #{host.ip || "http://#{host.name}"}")
+        http = EM::HttpRequest.new("http://#{host.ip || host.name}")
+        log.debug("Http Connection opened to http://#{host.ip || host.name}")
         http
       end
       
