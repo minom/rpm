@@ -1216,10 +1216,7 @@ module NewRelic
               
               f = Fiber.current
               response = http.apost(post_data)
-              response.callback do
-                log.debug "callback[#{response.inspect}]"
-                f.resume(check_for_exception(response))
-              end
+              response.callback { f.resume(response) }
               response.errback  { log.debug " errback[#{response.inspect}]"; raise}
               
               return Fiber.yield
@@ -1294,7 +1291,7 @@ module NewRelic
           log.debug "Response came back: #{response.inspect}"
           # raises the right exception if the remote server tells it to die
           # Just killing this feature for now
-          # return check_for_exception(response)
+          return check_for_exception(response)
         rescue NewRelic::Agent::ForceRestartException => e
           log.info e.message
           raise
