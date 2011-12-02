@@ -88,24 +88,34 @@ module NewRelic
       # swap 'VERIFY_NONE' for 'VERIFY_PEER' line to try it out
       # If verification fails, uncomment the 'http.ca_file' line
       # and it will use the included certificate.
+      
+      # deprecated like woah.  I dont care about ssl or proxies
+      # def http_connection(host = nil)
+      #   host ||= server
+      #   # Proxy returns regular HTTP if @proxy_host is nil (the default)
+      #   http_class = Net::HTTP::Proxy(proxy_server.name, proxy_server.port,
+      #                                 proxy_server.user, proxy_server.password)
+      #   http = http_class.new(host.ip || host.name, host.port)
+      #   log.debug("Http Connection opened to #{host.ip||host.name}:#{host.port}")
+      #   if use_ssl?
+      #     http.use_ssl = true
+      #     if verify_certificate?
+      #       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      #       http.ca_file = cert_file_path
+      #     else
+      #       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      #     end
+      #   end
+      #   http
+      # end
+      
       def http_connection(host = nil)
         host ||= server
-        # Proxy returns regular HTTP if @proxy_host is nil (the default)
-        http_class = Net::HTTP::Proxy(proxy_server.name, proxy_server.port,
-                                      proxy_server.user, proxy_server.password)
-        http = http_class.new(host.ip || host.name, host.port)
-        log.debug("Http Connection opened to #{host.ip||host.name}:#{host.port}")
-        if use_ssl?
-          http.use_ssl = true
-          if verify_certificate?
-            http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-            http.ca_file = cert_file_path
-          else
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          end
-        end
+        http = EM::HttpRequest.new(host.ip || "http://#{host.name}")
+        log.debug("Http Connection opened to #{host.ip || "http://#{host.name}"}")
         http
       end
+      
     end
 
     include ServerMethods

@@ -1186,8 +1186,9 @@ module NewRelic
         def send_request(opts)
           
           log.debug "Connect to #{opts.inspect}"
-          url = "http://" + opts[:collector].name
-          request = EM::HttpRequest.new(url)
+          # url = "http://" + opts[:collector].name
+          # request = EM::HttpRequest.new(url)
+          http = control.http_connection(collector)
           post_data =  {
             :path => opts[:uri],
             :body => opts[:data],
@@ -1214,7 +1215,7 @@ module NewRelic
               log.debug " --[NR]-- Sending newrelic data..."
               
               f = Fiber.current
-              response = request.apost(post_data)
+              response = http.apost(post_data)
               response.callback { log.debug "callback[#{response.inspect}]"; f.resume(response.response) }
               response.errback  { log.debug " errback[#{response.inspect}]"; f.resume(response.response) }
               
@@ -1224,17 +1225,16 @@ module NewRelic
             log.warn "Timed out trying to post data to New Relic (timeout = #{@request_timeout} seconds)" unless @request_timeout < 30
             raise
           end
-          if response.is_a? Net::HTTPServiceUnavailable
-            raise NewRelic::Agent::ServerConnectionException, "Service unavailable (#{response.code}): #{response.message}"
-          elsif response.is_a? Net::HTTPGatewayTimeOut
-            log.debug("Timed out getting response: #{response.message}")
-            raise Timeout::Error, response.message
-          elsif response.is_a? Net::HTTPRequestEntityTooLarge
-            raise PostTooBigException
-          elsif !(response.is_a? Net::HTTPSuccess)
-            raise NewRelic::Agent::ServerConnectionException, "Unexpected response from server (#{response.code}): #{response.message}"
-          end
-          response
+          # if response.is_a? Net::HTTPServiceUnavailable
+          #   raise NewRelic::Agent::ServerConnectionException, "Service unavailable (#{response.code}): #{response.message}"
+          # elsif response.is_a? Net::HTTPGatewayTimeOut
+          #   log.debug("Timed out getting response: #{response.message}")
+          #   raise Timeout::Error, response.message
+          # elsif response.is_a? Net::HTTPRequestEntityTooLarge
+          #   raise PostTooBigException
+          # elsif !(response.is_a? Net::HTTPSuccess)
+          #   raise NewRelic::Agent::ServerConnectionException, "Unexpected response from server (#{response.code}): #{response.message}"
+          # end
         end
 
         # Decompresses the response from the server, if it is gzip
