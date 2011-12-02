@@ -19,7 +19,6 @@ module NewRelic
       module ControllerInstrumentation
 
         def self.included(clazz) # :nodoc:
-          NewRelic::Control.instance.log.debug("Class #{clazz} extended")
           clazz.extend(ClassMethods)
         end
 
