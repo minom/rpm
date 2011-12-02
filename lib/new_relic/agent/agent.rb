@@ -170,8 +170,8 @@ module NewRelic
           # log.debug "Agent received after_fork notice in #$$: [#{control.agent_enabled?}; monitor=#{control.monitor_mode?}; connected: #{@connected.inspect}; thread=#{@worker_thread.inspect}]"
           return if !control.agent_enabled? or
             !control.monitor_mode? or
-            @connected == false or
-            @worker_fiber && @worker_fiber.alive?
+            @connected == false #or
+            #@worker_fiber && @worker_fiber.alive?
             # @worker_thread && @worker_thread.alive?
 
           log.info "Starting the worker thread in #$$ after forking."
@@ -588,9 +588,9 @@ module NewRelic
           #   deferred_work!(connection_options)
           # end # thread new
           # @worker_thread['newrelic_label'] = 'Worker Loop'
-          @worker_fiber = Fiber.new {
+          #@worker_fiber = Fiber.new {
             deferred_work!(connection_options)
-          }.resume
+          #}.resume
         end
 
         # A shorthand for NewRelic::Control.instance
