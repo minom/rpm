@@ -490,10 +490,11 @@ module NewRelic
           # Creates the worker loop and loads it with the instructions
           # it should run every @report_period seconds
           def create_and_run_worker_loop
-            @worker_loop = WorkerLoop.new
-            @worker_loop.run(@report_period) do
-              save_or_transmit_data
-            end
+            #@worker_loop = WorkerLoop.new
+            #@worker_loop.run(@report_period) do
+            #  save_or_transmit_data
+            #end
+            EM::add_periodic_timer( @report_period ) { save_or_transmit_data }
           end
 
           # Handles the case where the server tells us to restart -
