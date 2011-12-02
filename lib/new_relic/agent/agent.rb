@@ -494,7 +494,9 @@ module NewRelic
             #@worker_loop.run(@report_period) do
             #  save_or_transmit_data
             #end
-            EM::add_periodic_timer( @report_period ) { save_or_transmit_data }
+            EM::add_periodic_timer( @report_period ) do
+              Fiber.new { save_or_transmit_data }.resume
+            end
           end
 
           # Handles the case where the server tells us to restart -
