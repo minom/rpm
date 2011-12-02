@@ -1216,8 +1216,11 @@ module NewRelic
               
               f = Fiber.current
               response = http.apost(post_data)
-              response.callback { log.debug "callback[#{response.inspect}]"; f.resume(response.response) }
-              response.errback  { log.debug " errback[#{response.inspect}]"; f.resume(response.response) }
+              response.callback do
+                log.debug "callback[#{response.inspect}]"
+                f.resume(check_for_exception(response))
+              end
+              response.errback  { log.debug " errback[#{response.inspect}]"; raise}
               
               return Fiber.yield
             end
@@ -1240,12 +1243,12 @@ module NewRelic
         # Decompresses the response from the server, if it is gzip
         # encoded, otherwise returns it verbatim
         def decompress_response(response)
-          if response['content-encoding'] != 'gzip'
+          if response.response_header['content-encoding'] != 'gzip'
             log.debug "Uncompressed content returned"
-            return response.body
+            return response.response
           end
           log.debug "Decompressing return value"
-          i = Zlib::GzipReader.new(StringIO.new(response.body))
+          i = Zlib::GzipReader.new(StringIO.new(response.response))
           i.read
         end
 
